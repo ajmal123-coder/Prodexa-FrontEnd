@@ -1,6 +1,5 @@
 package com.prodexa.service;
 
-
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
@@ -8,64 +7,51 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import com.github.kwhat.jnativehook.mouse.NativeMouseListener;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class InputMonitoringService implements NativeKeyListener, NativeMouseListener {
 
     private int keyPressCount = 0;
     private int mouseClickCount = 0;
+    private boolean isMonitoringActive = false;
+    private boolean isPaused = false;
 
     public void start() {
         try {
-            Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-            logger.setLevel(Level.WARNING);
-
-            GlobalScreen.registerNativeHook();
-            GlobalScreen.addNativeKeyListener(this);
-            GlobalScreen.addNativeMouseListener(this);
+            if (!isMonitoringActive) {
+                GlobalScreen.registerNativeHook();
+                GlobalScreen.addNativeKeyListener(this);
+                GlobalScreen.addNativeMouseListener(this);
+                isMonitoringActive = true;
+                isPaused = false;
+            }
         } catch (NativeHookException e) {
             e.printStackTrace();
         }
+    }
+
+    public void pauseMonitoring() {
+        isPaused = true; // Just pause counting, keep listeners registered
+    }
+
+    public void resumeMonitoring() {
+        isPaused = false; // Resume counting again
     }
 
     public void stop() {
         try {
-            GlobalScreen.unregisterNativeHook();
+            if (isMonitoringActive) {
+                GlobalScreen.removeNativeKeyListener(this);
+                GlobalScreen.removeNativeMouseListener(this);
+                GlobalScreen.unregisterNativeHook();
+                isMonitoringActive = false;
+            }
         } catch (NativeHookException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void nativeKeyPressed(NativeKeyEvent e) {
-        keyPressCount++;
-        System.out.println("Key pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-        System.out.println("Total Keys Pressed: " + keyPressCount);
-    }
-
-    @Override
-    public void nativeKeyReleased(NativeKeyEvent e) {
-    }
-
-    @Override
-    public void nativeKeyTyped(NativeKeyEvent e) {
-    }
-
-
-    @Override
-    public void nativeMouseClicked(NativeMouseEvent e) {
-        mouseClickCount++;
-        System.out.println("Mouse clicked at: " + e.getX() + ", " + e.getY());
-        System.out.println("Total Mouse Clicks: " + mouseClickCount);
-    }
-
-    @Override
-    public void nativeMousePressed(NativeMouseEvent e) {
-    }
-
-    @Override
-    public void nativeMouseReleased(NativeMouseEvent e) {
+    public void resetCounts() {
+        keyPressCount = 0;
+        mouseClickCount = 0;
     }
 
     public int getKeyPressCount() {
@@ -75,7 +61,23 @@ public class InputMonitoringService implements NativeKeyListener, NativeMouseLis
     public int getMouseClickCount() {
         return mouseClickCount;
     }
+
+    @Override
+    public void nativeKeyPressed(NativeKeyEvent nativeEvent) {
+        if (isMonitoringActive && !isPaused) keyPressCount++;
+    }
+
+    @Override
+    public void nativeMouseClicked(NativeMouseEvent nativeEvent) {
+        if (isMonitoringActive && !isPaused) mouseClickCount++;
+    }
+
+    @Override
+    public void nativeKeyReleased(NativeKeyEvent nativeEvent) {}
+    @Override
+    public void nativeKeyTyped(NativeKeyEvent nativeEvent) {}
+    @Override
+    public void nativeMousePressed(NativeMouseEvent nativeEvent) {}
+    @Override
+    public void nativeMouseReleased(NativeMouseEvent nativeEvent) {}
 }
-
-
-
