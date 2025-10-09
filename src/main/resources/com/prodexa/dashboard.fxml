@@ -6,13 +6,12 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.prodexa.controller.DashboardController"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="400.0" prefWidth="600.0"
+            stylesheets="@dashboardStyles.css">
 
-    <!-- Title -->
     <Label alignment="CENTER" layoutX="141.0" prefHeight="54.0" prefWidth="336.0"
            styleClass="dashboard-title" text="Dashboard"/>
 
-    <!-- Stats Labels -->
     <Label fx:id="keyLabel" layoutX="208.0" layoutY="67.0"
            styleClass="stats-label" text="Keys Pressed: 0"/>
 
@@ -20,7 +19,6 @@
            prefHeight="42.0" prefWidth="208.0"
            styleClass="stats-label" text="Mouse Clicks: 0"/>
 
-    <!-- Buttons -->
     <Button fx:id="startButton" layoutX="150.0" layoutY="200.0"
             text="Start Monitoring" onAction="#handleStartButton"/>
 

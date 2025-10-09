@@ -17,7 +17,9 @@ public class InputMonitoringService implements NativeKeyListener, NativeMouseLis
     public void start() {
         try {
             if (!isMonitoringActive) {
-                GlobalScreen.registerNativeHook();
+                if (!GlobalScreen.isNativeHookRegistered()) {
+                    GlobalScreen.registerNativeHook();
+                }
                 GlobalScreen.addNativeKeyListener(this);
                 GlobalScreen.addNativeMouseListener(this);
                 isMonitoringActive = true;
@@ -29,23 +31,22 @@ public class InputMonitoringService implements NativeKeyListener, NativeMouseLis
     }
 
     public void pauseMonitoring() {
-        isPaused = true; // Just pause counting, keep listeners registered
+        isPaused = true;
     }
 
     public void resumeMonitoring() {
-        isPaused = false; // Resume counting again
+        isPaused = false;
     }
 
     public void stop() {
-        try {
-            if (isMonitoringActive) {
+        if (isMonitoringActive) {
+            try {
                 GlobalScreen.removeNativeKeyListener(this);
                 GlobalScreen.removeNativeMouseListener(this);
-                GlobalScreen.unregisterNativeHook();
                 isMonitoringActive = false;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (NativeHookException e) {
-            e.printStackTrace();
         }
     }
 
