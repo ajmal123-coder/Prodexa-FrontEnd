@@ -19,11 +19,11 @@ public class Launcher extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/prodexa/login.fxml"));
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/prodexa/dashboard.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/prodexa/login.fxml"));
         Scene scene = new Scene(loader.load());
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
+        primaryStage.setResizable(true);
         primaryStage.setTitle("PRODEXA - Login");
         primaryStage.show();
 
